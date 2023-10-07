@@ -4,44 +4,57 @@ import java.util.ArrayList;
 
 class Perguntas {
     private String pergunta;
-    private String resposta;
     private int peso;
 
-    public Perguntas(String pergunta, String resposta, int peso) {
+    public Perguntas(String pergunta, int peso) {
         this.pergunta = pergunta;
-        this.resposta = resposta;
         this.peso = peso;
     }
 
+
+    
     public String getPergunta() {
-        return pergunta;
-    }
+		return pergunta;
+	}
 
-    public String getResposta() {
-        return resposta;
-    }
+	public void setPergunta(String pergunta) {
+		this.pergunta = pergunta;
+	}
 
-    public int getPeso() {
-        return peso;
-    }
+	public int getPeso() {
+		return peso;
+	}
 
-    public static String calcularPrioridade(ArrayList<Perguntas> perguntas) {
-        int somaPesos = 0;
 
-        for (Perguntas pergunta : perguntas) {
-            somaPesos += pergunta.getPeso();
-        }
+	public void setPeso(int peso) {
+		this.peso = peso;
+	}
 
-        double percentual = (double) somaPesos / (double) (perguntas.size() * 4);
 
-        if (percentual >= 0.75) {
-            return "Muito Urgente";
-        } else if (percentual >= 0.5) {
-            return "Urgente";
-        } else if (percentual >= 0.25) {
-            return "Pouco Urgente";
-        } else {
-            return "Não Urgente";
-        }
-    }
+	
+	public static String calcularPrioridade(ArrayList<Perguntas> perguntas) {
+	    int somaPesos = 0;
+	    int somaMaxima = 5; 
+
+	    for (Perguntas pergunta : perguntas) {
+	        somaPesos += pergunta.getPeso();
+	    }
+
+	    double percentual = ((double) somaPesos * 100.0)/somaMaxima;
+
+	    //return  Double.toString(percentual);
+	    
+	    if (percentual >= 25.0) {
+	        return "Não Urgente";
+	    } else if (percentual >= 50.0 && percentual <= 25.0) {
+	        return "Pouco Urgente";
+	    } else if (percentual >= 75.0 && percentual <=50.0) {
+	        return "Urgente";
+	    } else {
+	        return "Emergência";
+	    }
+	    
+	    
+	}
+
 }
