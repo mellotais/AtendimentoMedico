@@ -1,71 +1,123 @@
 package AtendimentoMedico;
 
-
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
+
 
 public class Main {
     public static void main(String[] args) {
-        // Cria um médico
-        Medico medico = new Medico("Dr. João", new Date(22/11/1958), "Cardiologista");
+        // lista de médicos
+        List<Medico> medicos = new ArrayList<>();
+        medicos.add(new Medico("Dr. João", parseDate("22/11/1958"), "Cardiologista"));
+        medicos.add(new Medico("Dra. Maria", parseDate("10/05/1975"), "Ortopedista"));
+        medicos.add(new Medico("Dra. Ana", parseDate("16/06/1985"), "Dermatologista"));
+        medicos.add(new Medico("Dra. Clara", parseDate("14/02/1995"), "Otorinolaringologista"));
 
-        // Cria um paciente
-        Paciente paciente = new Paciente("Maria", new Date(18/9/2004));
+        // lista de pacientes
+        List<Paciente> pacientes = new ArrayList<>();
+        pacientes.add(new Paciente("Maria", parseDate("18/09/2001")));
+        pacientes.add(new Paciente("João", parseDate("16/09/2002")));
+        pacientes.add(new Paciente("Pedro", parseDate("13/09/2000")));
+        pacientes.add(new Paciente("Paul", parseDate("11/09/2003")));
 
-        // Cria uma lista de atendimentos
+        // cria lista de atendimentos
         ListaDeAtendimentos listaDeAtendimentos = new ListaDeAtendimentos();
 
-        // Cria um Scanner para ler a entrada do usuário
-        Scanner scanner = new Scanner(System.in);
+        
+        Scanner entrada = new Scanner(System.in);
 
         while (true) {
-            System.out.println("Menu:");
-            System.out.println("1. Criar atendimento");
-            System.out.println("2. Listar atendimentos");
-            System.out.println("3. Sair");
-            System.out.print("Escolha uma opção: ");
-            int opcao = scanner.nextInt();
-
+            System.out.println("---------------------------");
+            System.out.println("           MENU:");
+            System.out.println(" ");
+            System.out.println(" 1. Criar atendimento");
+            System.out.println(" 2. Listar atendimentos");
+            System.out.println(" 3. Sair");
+            System.out.println("- - - - - - - - - - - - - -");
+            System.out.println(" Digite uma opção ");
+            System.out.println("---------------------------");
+            
+            
+            int opcao = entrada.nextInt();
             switch (opcao) {
                 case 1:
-                    // Cria uma pergunta
-                    ArrayList<Perguntas> perguntas = new ArrayList<Perguntas>();
-                    perguntas.add(new Perguntas("Você tem febre?", "Sim", 3));
-                    perguntas.add(new Perguntas("Você está com dor intensa?", "Sim", 3));
-                    perguntas.add(new Perguntas("Você é uma criança ou idoso?", "Sim", 3));
-                    perguntas.add(new Perguntas("Você possui machucados que requerem pontos?", "Sim", 4));
-                    perguntas.add(new Perguntas("Tomou algum medicamento recentemente?", "Sim", 4));
+                    // seleciona aleatoriamente um médico e um paciente
+                    Medico medicoSelecionado = medicos.get(new Random().nextInt(medicos.size()));
+                    Paciente pacienteSelecionado = pacientes.get(new Random().nextInt(pacientes.size()));
 
-                    String inicioAtendimento = "18:45";
-                    String fimAtendimento = "19:30";
-                    String chegada = "18:30";
+                    // cria uma pergunta
+                    ArrayList<Perguntas> perguntasTriagem = new ArrayList<Perguntas>();
+                    
+                    
+                    perguntasTriagem.add(new Perguntas("Você tem febre?", numero()));
+                    perguntasTriagem.add(new Perguntas("Você está com dor intensa?", numero()));
+                    perguntasTriagem.add(new Perguntas("Você é uma criança ou idoso?", numero()));
+                    perguntasTriagem.add(new Perguntas("Você possui machucados que requerem pontos?", numero()));
+                    perguntasTriagem.add(new Perguntas("Tomou algum medicamento recentemente?", numero()));
+
+                    String inicioAtendimento = gerarHoraAleatoria();
+                    String fimAtendimento = gerarHoraPosterior(inicioAtendimento);
+                    String chegada = gerarHoraPosterior(fimAtendimento);
 
                     SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-                    Date horaChegada = dateFormat.parse(chegada);
-                    Date horaInicio = dateFormat.parse(inicioAtendimento);
-                    Date horaFinal = dateFormat.parse(fimAtendimento);
-                    
-                    
-                    
-                    // Cria um atendimento com as perguntas da triagem e o paciente
-                    Atendimento atendimento = new Atendimento(new Date(), new Date(), new Date(), new Date(), false, perguntas, paciente);
+                    try {
+                        Date horaChegadaTriagem = dateFormat.parse(chegada);
+                        Date horaInicioTriagem = dateFormat.parse(inicioAtendimento);
+                        Date horaFinalTriagem = dateFormat.parse(fimAtendimento);
+                        Date dataAtual = new Date(06/10/2023); // 6 de outubro de 2023
 
-                    // Cria um atendimento
-                    atendimento.emitirAtestado("Atestado médico");
+                        // Cria um atendimento com as perguntas da triagem, paciente e médico
+                        Atendimento atendimentoTriagem = new Atendimento(horaChegadaTriagem, horaInicioTriagem, horaFinalTriagem, dataAtual, false, perguntasTriagem, pacienteSelecionado, medicoSelecionado);
 
-                    // Adiciona o atendimento à lista de atendimentos
-                    listaDeAtendimentos.addAtendimento(atendimento);
+                        // Cria um atendimento
+                        atendimentoTriagem.emitirAtestado("Atestado médico");
 
-                    System.out.println("Atendimento criado.");
-                    break;
-                case 2:
-                    // Lista os atendimentos
-                    for (Atendimento atendimento : listaDeAtendimentos.getAtendimentos()) {
-                        System.out.println("Atendimento, Paciente: " + atendimento.getPaciente().getNome() + ", Prioridade: "  + atendimento.getPrioridade() + ", Atestado emitido: " + atendimento.emitirAtestado("Atestado médico"));
+                        // Adiciona o atendimento à lista de atendimentos
+                       
+                        // Adiciona o atendimento à lista de atendimentos usando o método da classe ListaDeAtendimentos
+                        listaDeAtendimentos.addAtendimento(atendimentoTriagem);
+
+                        // Ordena a lista de atendimentos por prioridade
+                        listaDeAtendimentos.ordenarPorPrioridade();
+
+                        System.out.println("Atendimento de triagem criado.");
+                        System.out.println();
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
                     break;
+
+                case 2:
+                    // Obtém a lista de atendimentos da classe ListaDeAtendimentos
+                    ArrayList<Atendimento> atendimentos = listaDeAtendimentos.getAtendimentos();
+
+                    if (atendimentos.isEmpty()) {
+                        System.out.println("Não há atendimentos registrados.");
+                    } else {
+                        // Lista os atendimentos
+                        for (Atendimento atendimento : atendimentos) {
+                            System.out.println("Médico: " + atendimento.getMedico().getNome() + ", Especialidade: " + atendimento.getMedico().getEspecialidade() + ", Data de Nascimento: " + atendimento.getMedico().getDataNasc());
+                            System.out.println("Paciente: " + atendimento.getPaciente().getNome() + " [" + atendimento.getPaciente().getDataNasc() + "] ");
+                            System.out.println("Prioridade: " + atendimento.getPrioridade());
+                            System.out.println("Atestado emitido: " + atendimento.emitirAtestado("Atestado médico"));
+                            System.out.println("Chegada na Unidade: " + atendimento.getHoraChegadaNaUnidade());
+                            System.out.println("Hora de Início atendimento: " + atendimento.getInicioAtendimento());
+                            System.out.println("Hora de Fim do atendimento: " + atendimento.getFimAtendimento());
+                            System.out.println("Duração: " + atendimento.calcularDuracao());
+                            System.out.println("Atestado emitido: " + atendimento.emitirAtestado("Sim"));
+                            System.out.println(" ");
+                            System.out.println("********************************************************** ");
+                        }
+                    }
+                    break;
+
                 case 3:
                     // Sai do programa
                     System.exit(0);
@@ -74,83 +126,53 @@ public class Main {
                     System.out.println("Opção inválida.");
                     break;
             }
+           
         }
+        
     }
-}
+    
+    private static String gerarHoraAleatoria() {
+        Random random = new Random();
+        int hora = random.nextInt(24);
+        int minuto = random.nextInt(60);
 
+        return String.format("%02d:%02d", hora, minuto);
+    }
 
+    private static String gerarHoraPosterior(String horaReferencia) {
+        Random random = new Random();
+        int minutosExtras = random.nextInt(60); // Adicionar até 59 minutos extras
 
+        // Converter a hora de referência em minutos totais
+        String[] partes = horaReferencia.split(":");
+        int minutosTotais = Integer.parseInt(partes[0]) * 60 + Integer.parseInt(partes[1]);
 
+        // Adicionar minutos extras e ajustar as horas e minutos, se necessário
+        minutosTotais += minutosExtras;
+        int hora = minutosTotais / 60;
+        int minuto = minutosTotais % 60;
 
-/*
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-
-public class Main {
-    public static void main(String[] args) {
+        // Formatar a hora como string
+        return String.format("%02d:%02d", hora, minuto);
+    }
+    
+    private static Date parseDate(String dateString) {
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-
-            Medico medico1 = new Medico("Dr. João", new Date(22/11/1958), "Cardiologista");
-            Medico medico2 = new Medico("Dra. Maria", new Date(10/05/1975), "Ortopedista");
-            Medico medico3 = new Medico("Dra. Ana", new Date(16/06/1985), "Dermatologista");
-            Medico medico4 = new Medico("Dra. Clara", new Date(14/02/1995), "Otorinolaringologista");
-
-            // Criando uma lista de atendimentos
-            ListaDeAtendimentos listaDeAtendimentos = new ListaDeAtendimentos();
-
-            // Criando pacientes e consultas
-            for (int i = 1; i <= 5; i++) {
-                String nomePaciente = "Paciente" + i;
-                Date dataNascimento = new Date(); // Defina a data de nascimento apropriada
-                Date horaChegada = dateFormat.parse("18:" + (30 + i));
-                Atendimento atendimento = criarAtendimento("18:45", "19:" + (30 + i), horaChegada);
-                Paciente paciente = new Paciente(nomePaciente, dataNascimento, atendimento);
-
-                // Define o médico associado ao paciente
-                Medico medico = new Random().nextBoolean() ? medico1 : medico2;
-                paciente.getAtendimento().setMedico(medico);
-
-                // Adiciona o paciente à lista de atendimentos
-                listaDeAtendimentos.addPaciente(paciente);
-            }
-
-            // Ordena a lista de atendimentos por prioridade
-            listaDeAtendimentos.ordenarPorPrioridade();
-
-            // Exibindo informações dos pacientes
-            for (Paciente paciente : listaDeAtendimentos.getPacientes()) {
-                Medico medico = paciente.getAtendimento().getMedico();
-                System.out.println("Médico: " + medico.getNome() + ", Especialidade: " + medico.getEspecialidade());
-                System.out.println("Paciente: " + paciente.getNome() + ", Data de Nascimento: " + dateFormat.format(paciente.getDataNascimento()));
-                System.out.println("Atendimento: Duração: " + paciente.getAtendimento().calcularDuracao() +
-                        ", Hora de Chegada: " + dateFormat.format(paciente.getAtendimento().getHoraChegada()) +
-                        ", Prioridade: " + paciente.getAtendimento().getPrioridade() +
-                        ", Atestado emitido: " + paciente.getAtendimento().emitirAtestado("Atestado médico"));
-                System.out.println();
-            }
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            return dateFormat.parse(dateString);
         } catch (ParseException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
-    public static Atendimento criarAtendimento(String inicioAtendimento, String fimAtendimento, Date chegada) throws ParseException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-        Date horaInicio = dateFormat.parse(inicioAtendimento);
-        Date horaFinal = dateFormat.parse(fimAtendimento);
-
-        ArrayList<Perguntas> perguntas = new ArrayList<>();
-        perguntas.add(new Perguntas("Você tem febre?", "Sim", 3));
-        perguntas.add(new Perguntas("Você está com dor intensa?", "Sim", 3));
-        // Adicione mais perguntas, se necessário
-
-        String prioridade = Perguntas.calcularPrioridade(perguntas);
-
-        return new Atendimento(horaInicio, horaFinal, chegada, false, prioridade, perguntas);
+    
+    private static int numero() {
+        List<Integer> listanumero = Arrays.asList(1, 0);
+        int n = new Random().nextInt(listanumero.size());
+        return listanumero.get(n);
     }
+
+
 }
-*/
+
