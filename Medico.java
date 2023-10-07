@@ -10,6 +10,8 @@ public class Medico extends Pessoa {
         setEspecialidade(especialidade);
     }
 
+    
+    
 	public String getEspecialidade() {
 		return especialidade;
 	}
@@ -18,13 +20,20 @@ public class Medico extends Pessoa {
 		this.especialidade = especialidade;
 	}
 
+	
+	
+	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Medico [especialidade=");
 		builder.append(especialidade);
+		builder.append(", toString()=");
+		builder.append(super.toString());
 		builder.append("]");
 		return builder.toString();
 	}
+
+	
     
 }
